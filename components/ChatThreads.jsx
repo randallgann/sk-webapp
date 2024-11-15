@@ -1,17 +1,26 @@
+// /components/ChatThreads.jsx
+import React, { useState } from 'react';
 import Thread from "./Thread";
 import {
-  BookmarkIcon,
+  BookmarkIcon as BookmarkSolidIcon,
   ChatBubbleOvalLeftIcon,
+  PlusCircleIcon,
+  TrashIcon,
 } from "@heroicons/react/24/solid";
+import { BookmarkIcon as BookmarkOutlineIcon } from "@heroicons/react/24/outline";
 import ThreadHeader from "./ThreadHeader";
-import { GIRL_3_IMAGE } from "../utils/images";
-import { threads } from "../utils/data";
-import { useState } from "react";
 
 export default function ContactsList({ onClick }) {
   const [query, setQuery] = useState("");
+  const [regularThreads, setRegularThreads] = useState([]);
+  const [bookmarkedThreads, setBookmarkedThreads] = useState([]);
 
-  let threadsArray = threads.filter((thread) => {
+  // Filter threads based on search query
+  const filteredRegularThreads = regularThreads.filter((thread) => {
+    return thread.name.toLowerCase().includes(query.toLowerCase());
+  });
+
+  const filteredBookmarkedThreads = bookmarkedThreads.filter((thread) => {
     return thread.name.toLowerCase().includes(query.toLowerCase());
   });
 
@@ -19,42 +28,126 @@ export default function ContactsList({ onClick }) {
     setQuery(event.target.value);
   }
 
+  const handleCreateThread = () => {
+    const newThread = {
+      id: Date.now(),
+      name: `Thread ${regularThreads.length + bookmarkedThreads.length + 1}`,
+      isOnline: true,
+      shortName: "T",
+      isReaded: true,
+      lastMessage: "New thread created",
+      time: new Date().toLocaleTimeString(),
+    };
+
+    setRegularThreads(prevThreads => [...prevThreads, newThread]);
+    onClick(newThread);
+  };
+
+  const handleDeleteThread = (threadId, isBookmarked) => {
+    if (isBookmarked) {
+      setBookmarkedThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+    } else {
+      setRegularThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+    }
+  };
+
+  const handleBookmark = (thread) => {
+    // Remove from regular threads and add to bookmarked
+    setRegularThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
+    setBookmarkedThreads(prevThreads => [...prevThreads, thread]);
+  };
+
+  const handleUnbookmark = (thread) => {
+    // Remove from bookmarked threads and add to regular
+    setBookmarkedThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
+    setRegularThreads(prevThreads => [...prevThreads, thread]);
+  };
+
+  // Thread component with action buttons
+  const ThreadWithActions = ({ userData, onClick, isBookmarked = false }) => {
+    return (
+      <div className="relative group">
+        <Thread userData={userData} onClick={onClick} />
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 
+                      transition-opacity duration-200 flex items-center space-x-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              isBookmarked ? handleUnbookmark(userData) : handleBookmark(userData);
+            }}
+            className="p-2 hover:bg-blue-100 rounded-full"
+            title={isBookmarked ? "Remove bookmark" : "Add bookmark"}
+          >
+            {isBookmarked ? (
+              <BookmarkSolidIcon className="w-4 h-4 text-blue-500" />
+            ) : (
+              <BookmarkOutlineIcon className="w-4 h-4 text-blue-500 hover:text-blue-600" />
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteThread(userData.id, isBookmarked);
+            }}
+            className="p-2 hover:bg-red-100 rounded-full"
+            title="Delete thread"
+          >
+            <TrashIcon className="w-4 h-4 text-red-500 hover:text-red-600" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const CreateThreadButton = () => (
+    <div className="mt-4 px-2">
+      <button
+        onClick={handleCreateThread}
+        className="flex items-center justify-center space-x-2 w-full bg-blue-500 hover:bg-blue-600 
+                   text-white px-6 py-3 rounded-lg transition-colors duration-200"
+      >
+        <PlusCircleIcon className="w-6 h-6" />
+        <span>Create New Thread</span>
+      </button>
+    </div>
+  );
+
   return (
     <div className="grow lg:shrink-0 scrollbar-hide overflow-y-auto lg:max-w-xs">
       <ThreadHeader onSearch={handleSearch} />
       <div className="p-6">
         <p className="flex items-center text-gray-400">
-          <BookmarkIcon className="w-5 h-5" />
-
+          <BookmarkSolidIcon className="w-5 h-5" />
           <span className="uppercase text-sm font-medium ml-3">Bookmarked</span>
         </p>
         <div>
-          <Thread
-            userData={{
-              isOnline: true,
-              shortName: "C",
-              avatar: GIRL_3_IMAGE,
-              isReaded: true,
-            }}
-          />
+          {filteredBookmarkedThreads.map((userData) => (
+            <ThreadWithActions
+              userData={userData}
+              onClick={() => onClick(userData)}
+              key={userData.id}
+              isBookmarked={true}
+            />
+          ))}
         </div>
       </div>
       <div className="p-6">
         <p className="flex items-center text-gray-400">
           <ChatBubbleOvalLeftIcon className="w-5 h-5" />
-
           <span className="uppercase text-sm font-medium ml-3">
             All Messages
           </span>
         </p>
         <div>
-          {threadsArray.map((userData, i) => (
-            <Thread
+          {filteredRegularThreads.map((userData) => (
+            <ThreadWithActions
               userData={userData}
               onClick={() => onClick(userData)}
-              key={i}
+              key={userData.id}
+              isBookmarked={false}
             />
           ))}
+          <CreateThreadButton />
         </div>
       </div>
     </div>

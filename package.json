@@ -2,6 +2,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.13",
     "@microsoft/signalr": "^8.0.7",
+    "axios": "^1.7.7",
     "next": "^13.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
