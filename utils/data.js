@@ -117,26 +117,31 @@ export const threads = [
 
 export const menuItems = [
   {
+    id: 'home',
     child: <Squares2X2Icon className="w-6 h-6" />,
     active: false,
     showOnMobile: false,
   },
   {
+    id: 'chart',
     child: <PresentationChartLineIcon className="w-6 h-6" />,
     active: false,
     showOnMobile: false,
   },
   {
+    id: 'calendar',
     child: <CalendarIcon className="w-6 h-6" />,
     active: false,
     showOnMobile: true,
   },
   {
+    id: 'chat',
     child: <ChatBubbleOvalLeftEllipsisIcon className="w-6 h-6" />,
     active: true,
     showOnMobile: true,
   },
   {
+    id: 'users',
     child: <UsersIcon className="w-6 h-6" />,
     active: false,
     showOnMobile: true,
@@ -145,11 +150,13 @@ export const menuItems = [
 
 export const settingMenuItems = [
   {
+    id: 'notifications',
     child: <BellIcon className="w-6 h-6" />,
     active: false,
     showOnMobile: false,
   },
   {
+    id: 'settings',
     child: <Cog6ToothIcon className="w-6 h-6" />,
     active: false,
     showOnMobile: true,

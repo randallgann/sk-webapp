@@ -29,8 +29,6 @@ export default function Thread({
             <span className="text-green-500">Typing...</span>
           ) : (
             <>
-              <span>Asiap maszeehh!</span>
-
               <ThreadStatus readed={userData?.isReaded} newMessages={newMessages} />
             </>
           )}

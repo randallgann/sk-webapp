@@ -9,11 +9,13 @@ import {
 } from "@heroicons/react/24/solid";
 import { BookmarkIcon as BookmarkOutlineIcon } from "@heroicons/react/24/outline";
 import ThreadHeader from "./ThreadHeader";
+import { ThreadService } from '../utils/apiService';
 
-export default function ContactsList({ onClick }) {
+export default function ContactsList({ onClick, onDelete }) {
   const [query, setQuery] = useState("");
   const [regularThreads, setRegularThreads] = useState([]);
   const [bookmarkedThreads, setBookmarkedThreads] = useState([]);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Filter threads based on search query
   const filteredRegularThreads = regularThreads.filter((thread) => {
@@ -28,39 +30,94 @@ export default function ContactsList({ onClick }) {
     setQuery(event.target.value);
   }
 
-  const handleCreateThread = () => {
-    const newThread = {
-      id: Date.now(),
-      name: `Thread ${regularThreads.length + bookmarkedThreads.length + 1}`,
-      isOnline: true,
-      shortName: "T",
-      isReaded: true,
-      lastMessage: "New thread created",
-      time: new Date().toLocaleTimeString(),
-    };
+  const handleCreateThread = async () => {
+    try {
+      setIsCreating(true);
+      
+      const threadData = {
+        name: `Thread ${regularThreads.length + bookmarkedThreads.length + 1}`,
+        isOnline: true,
+        shortName: "T",
+        isReaded: true,
+        lastMessage: "New thread created",
+        time: new Date().toLocaleTimeString(),
+      };
 
-    setRegularThreads(prevThreads => [...prevThreads, newThread]);
-    onClick(newThread);
-  };
-
-  const handleDeleteThread = (threadId, isBookmarked) => {
-    if (isBookmarked) {
-      setBookmarkedThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
-    } else {
-      setRegularThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+      // Send POST request to create thread
+      const createdThread = await ThreadService.createThread(threadData);
+      
+      // Update local state with the created thread
+      setRegularThreads(prevThreads => [...prevThreads, createdThread]);
+      
+      // Notify parent component
+      onClick(createdThread);
+    } catch (error) {
+      console.error('Failed to create thread:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsCreating(false);
     }
   };
 
-  const handleBookmark = (thread) => {
-    // Remove from regular threads and add to bookmarked
-    setRegularThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
-    setBookmarkedThreads(prevThreads => [...prevThreads, thread]);
+    const handleDeleteThread = async (threadId, isBookmarked) => {
+    try {
+      // Send DELETE request to remove thread
+      await ThreadService.deleteThread(threadId);
+      
+      // Update local state
+      if (isBookmarked) {
+        setBookmarkedThreads(prevThreads => 
+          prevThreads.filter(thread => thread.id !== threadId)
+        );
+      } else {
+        setRegularThreads(prevThreads => 
+          prevThreads.filter(thread => thread.id !== threadId)
+        );
+      }
+      // Notify parent about thread deletion
+      onDelete(threadId);
+    } catch (error) {
+      console.error('Failed to delete thread:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
-  const handleUnbookmark = (thread) => {
-    // Remove from bookmarked threads and add to regular
-    setBookmarkedThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
-    setRegularThreads(prevThreads => [...prevThreads, thread]);
+    const handleBookmark = async (thread) => {
+    try {
+      // Send PUT request to update thread's bookmark status
+      const updatedThread = await ThreadService.updateThread(thread.id, {
+        ...thread,
+        isBookmarked: true
+      });
+
+      // Update local state
+      setRegularThreads(prevThreads => 
+        prevThreads.filter(t => t.id !== thread.id)
+      );
+      setBookmarkedThreads(prevThreads => [...prevThreads, updatedThread]);
+    } catch (error) {
+      console.error('Failed to bookmark thread:', error);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  const handleUnbookmark = async (thread) => {
+    try {
+      // Send PUT request to update thread's bookmark status
+      const updatedThread = await ThreadService.updateThread(thread.id, {
+        ...thread,
+        isBookmarked: false
+      });
+
+      // Update local state
+      setBookmarkedThreads(prevThreads => 
+        prevThreads.filter(t => t.id !== thread.id)
+      );
+      setRegularThreads(prevThreads => [...prevThreads, updatedThread]);
+    } catch (error) {
+      console.error('Failed to unbookmark thread:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   // Thread component with action buttons
@@ -103,11 +160,13 @@ export default function ContactsList({ onClick }) {
     <div className="mt-4 px-2">
       <button
         onClick={handleCreateThread}
-        className="flex items-center justify-center space-x-2 w-full bg-blue-500 hover:bg-blue-600 
-                   text-white px-6 py-3 rounded-lg transition-colors duration-200"
+        disabled={isCreating}
+        className={`flex items-center justify-center space-x-2 w-full ${
+          isCreating ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
+        } text-white px-6 py-3 rounded-lg transition-colors duration-200`}
       >
         <PlusCircleIcon className="w-6 h-6" />
-        <span>Create New Thread</span>
+        <span>{isCreating ? 'Creating...' : 'Create New Thread'}</span>
       </button>
     </div>
   );

@@ -86,9 +86,10 @@ export default function Profile() {
           <PhotoIcon className="w-5 h-5 text-gray-400" />
         </h3>
         <div className="grid grid-cols-3 gap-1">
-          {[0, 1, 2].map(() => {
+          {[0, 1, 2].map((index) => {
             return (
               <img
+                key={index}
                 className="w-full"
                 width="88"
                 height="88"
@@ -105,9 +106,9 @@ export default function Profile() {
           <DocumentIcon className="w-5 h-5 text-gray-400" />
         </h3>
 
-        {[0, 1, 2].map(() => {
+        {[0, 1, 2].map((index) => {
           return (
-            <div className="flex items-center gap-3">
+            <div key={index} className="flex items-center gap-3">
               <div className="flex items-center justify-center shrink-0 w-12 h-12 rounded-full overflow-hidden bg-nav text-white">
                 <DocumentIcon className="w-6 h-6" />
               </div>

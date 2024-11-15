@@ -1,5 +1,5 @@
 // /components/Chat.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatBody from "./ChatBody";
 import {
   VideoCameraIcon,
@@ -12,16 +12,25 @@ import {
 import Avatar from "./Avatar";
 
 export default function Chat({ thread, isVisible, onClick }) {
+  const [currentThread, setCurrentThread] = useState(null);
+  const [message, setMessage] = useState('Type your message here...');
+
+  useEffect(() => {
+    setCurrentThread(thread);
+  }, [thread]);
+
   const displayStyle = isVisible ? "translate-x-0" : "translate-x-full";
 
-  // Ensure thread has all required properties with defaults
-  const threadWithDefaults = {
-    shortName: thread?.shortName || "T",
-    isOnline: thread?.isOnline || false,
-    avatar: thread?.avatar || null,
-    name: thread?.name || "New Thread",
-    ...thread
-  };
+  // If no thread is selected or thread was deleted, show empty state
+  if (!currentThread) {
+    return (
+      <div className={`${displayStyle} lg:translate-x-0 fixed inset-0 h-full lg:relative lg:inset-auto flex flex-col grow w-full border-x border-gray-100 bg-white z-10 transition`}>
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Select a thread or create a new one to start chatting</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -37,12 +46,12 @@ export default function Chat({ thread, isVisible, onClick }) {
           <ArrowLeftIcon className="w-6 h-6" />
         </button>
         <Avatar
-          textImage={threadWithDefaults.shortName}
-          isOnline={threadWithDefaults.isOnline}
-          srcImage={threadWithDefaults.avatar}
+          textImage={currentThread.shortName}
+          isOnline={currentThread.isOnline}
+          srcImage={currentThread.avatar}
         />
         <div className="flex flex-col ml-4">
-          <span className="font-bold text-xl">{threadWithDefaults.name}</span>
+          <span className="font-bold text-xl">{currentThread.name}</span>
           <span className="text-xs text-gray-400">New conversation</span>
         </div>
         <div className="flex items-center space-x-6 ml-auto text-gray-400">
@@ -59,7 +68,7 @@ export default function Chat({ thread, isVisible, onClick }) {
           </button>
         </div>
       </div>
-      <ChatBody thread={threadWithDefaults} />
+      <ChatBody thread={currentThread} />
       <div className="flex items-center gap-3 p-4">
         <button
           className="shrink-0 text-gray-400"
@@ -72,6 +81,8 @@ export default function Chat({ thread, isVisible, onClick }) {
           <div
             className="w-full outline-0 text-gray-500 px-4 py-2 rounded-lg bg-gray-50"
             contentEditable="true"
+            onInput={e => setMessage(e.currentTarget.textContent)}
+            dangerouslySetInnerHTML={{ __html: message }}
             tabIndex="0"
             dir="ltr"
             spellCheck="false"
@@ -79,7 +90,6 @@ export default function Chat({ thread, isVisible, onClick }) {
             autoCorrect="off"
             autoCapitalize="off"
           >
-            Type your message here...
           </div>
         </div>
         <button
