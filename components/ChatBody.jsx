@@ -1,20 +1,18 @@
-// /components/ChatBody.jsx
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Message from "./Message";
 import MessageContent from "./MessageContent";
-import ChatSeparator from "./ChatSeparator";
 import { ChatBubbleBottomCenterIcon } from "@heroicons/react/24/outline";
 
-export default function ChatBody({ thread }) {
+export default function ChatBody({ thread, messages, isTyping, botStatus }) {
   const scrollTo = useRef();
-
+  
   useEffect(() => {
-    scrollTo.current.scrollIntoView();
-  });
+    // Scroll to bottom whenever messages change or typing status changes
+    scrollTo.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
 
-  const hasMessages = thread.messages && thread.messages.length > 0;
-
-  if (!hasMessages) {
+  // Show empty state when no messages and not typing
+  if (!messages?.length && !isTyping) {
     return (
       <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
         <div className="flex flex-col items-center justify-center h-full space-y-4">
@@ -35,10 +33,15 @@ export default function ChatBody({ thread }) {
     );
   }
 
+  // Sort messages by timestamp
+  const sortedMessages = [...(messages || [])].sort(
+    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+  );
+
   return (
+    
     <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
-      <ChatSeparator>Today</ChatSeparator>
-      {thread.messages.map((message, index) => (
+      {sortedMessages.map((message) => (
         <div key={message.id} className="py-3">
           <Message currentUser={message.isCurrentUser}>
             <MessageContent 
@@ -50,6 +53,21 @@ export default function ChatBody({ thread }) {
           </Message>
         </div>
       ))}
+
+      {isTyping && botStatus && (
+        <div className="py-3">
+          <Message currentUser={false}>
+            <MessageContent 
+              index={0} 
+              currentUser={false}
+              isTyping={true}
+            >
+              {botStatus}...
+            </MessageContent>
+          </Message>
+        </div>
+      )}
+      
       <div ref={scrollTo}></div>
     </div>
   );

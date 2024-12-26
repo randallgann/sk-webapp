@@ -1,5 +1,6 @@
 // /components/ChatThreads.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { chatService } from '../utils/chatService';
 import Thread from "./Thread";
 import {
   BookmarkIcon as BookmarkSolidIcon,
@@ -16,6 +17,51 @@ export default function ContactsList({ onClick, onDelete }) {
   const [regularThreads, setRegularThreads] = useState([]);
   const [bookmarkedThreads, setBookmarkedThreads] = useState([]);
   const [isCreating, setIsCreating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadThreads();
+  }, []);
+
+  const loadThreads = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const threads = await chatService.getAllThreads();
+      
+      // Separate threads into regular and bookmarked
+      const bookmarked = threads.filter(thread => thread.isBookmarked);
+      const regular = threads.filter(thread => !thread.isBookmarked);
+      
+      setBookmarkedThreads(bookmarked);
+      setRegularThreads(regular);
+    } catch (err) {
+      console.error('Failed to load threads:', err);
+      setError('Failed to load threads. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  
+  // Helper function to get the next available thread
+  const getNextAvailableThread = (deletedThreadId) => {
+    // First check bookmarked threads
+    const allThreads = [...bookmarkedThreads, ...regularThreads];
+    const currentIndex = allThreads.findIndex(thread => thread.id === deletedThreadId);
+    
+    // If there are any threads left after deletion
+    if (allThreads.length > 1) {
+      // If it's the last thread, return the previous one
+      if (currentIndex === allThreads.length - 1) {
+        return allThreads[currentIndex - 1];
+      }
+      // Otherwise return the next thread
+      return allThreads[currentIndex + 1] || allThreads[0];
+    }
+    return null;
+  };
 
   // Filter threads based on search query
   const filteredRegularThreads = regularThreads.filter((thread) => {
@@ -30,18 +76,33 @@ export default function ContactsList({ onClick, onDelete }) {
     setQuery(event.target.value);
   }
 
+  // Update the handleUpdateThread function for bookmarking
+const handleUpdateThread = async (thread, isBookmarked) => {
+  try {
+    const updatedThreadData = {
+      ...thread,
+      isBookmarked,
+      name: thread.name // Ensure we pass the name for mapping
+    };
+
+    const updatedThread = await ThreadService.updateThread(thread.id, updatedThreadData);
+    return updatedThread;
+  } catch (error) {
+    console.error('Failed to update thread:', error);
+    throw error;
+  }
+};
+
   const handleCreateThread = async () => {
     try {
       setIsCreating(true);
       
       const threadData = {
-        name: `Thread ${regularThreads.length + bookmarkedThreads.length + 1}`,
-        isOnline: true,
-        shortName: "T",
-        isReaded: true,
-        lastMessage: "New thread created",
-        time: new Date().toLocaleTimeString(),
-      };
+      name: `Thread ${regularThreads.length + bookmarkedThreads.length + 1}`,
+      // Only include fields that will be mapped to what the backend expects
+      isOnline: true,
+      isBookmarked: false
+    };
 
       // Send POST request to create thread
       const createdThread = await ThreadService.createThread(threadData);
@@ -61,6 +122,7 @@ export default function ContactsList({ onClick, onDelete }) {
 
     const handleDeleteThread = async (threadId, isBookmarked) => {
     try {
+      const nextThread = getNextAvailableThread(threadId);
       // Send DELETE request to remove thread
       await ThreadService.deleteThread(threadId);
       
@@ -74,8 +136,16 @@ export default function ContactsList({ onClick, onDelete }) {
           prevThreads.filter(thread => thread.id !== threadId)
         );
       }
+
+      if (nextThread) {
+        onClick(nextThread);
+      } else {
+        onClick(null);
+      }
+
       // Notify parent about thread deletion
       onDelete(threadId);
+
     } catch (error) {
       console.error('Failed to delete thread:', error);
       // You might want to show an error message to the user here
@@ -83,42 +153,24 @@ export default function ContactsList({ onClick, onDelete }) {
   };
 
     const handleBookmark = async (thread) => {
-    try {
-      // Send PUT request to update thread's bookmark status
-      const updatedThread = await ThreadService.updateThread(thread.id, {
-        ...thread,
-        isBookmarked: true
-      });
+  try {
+    const updatedThread = await handleUpdateThread(thread, true);
+    setRegularThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
+    setBookmarkedThreads(prevThreads => [...prevThreads, updatedThread]);
+  } catch (error) {
+    console.error('Failed to bookmark thread:', error);
+  }
+};
 
-      // Update local state
-      setRegularThreads(prevThreads => 
-        prevThreads.filter(t => t.id !== thread.id)
-      );
-      setBookmarkedThreads(prevThreads => [...prevThreads, updatedThread]);
-    } catch (error) {
-      console.error('Failed to bookmark thread:', error);
-      // You might want to show an error message to the user here
-    }
-  };
-
-  const handleUnbookmark = async (thread) => {
-    try {
-      // Send PUT request to update thread's bookmark status
-      const updatedThread = await ThreadService.updateThread(thread.id, {
-        ...thread,
-        isBookmarked: false
-      });
-
-      // Update local state
-      setBookmarkedThreads(prevThreads => 
-        prevThreads.filter(t => t.id !== thread.id)
-      );
-      setRegularThreads(prevThreads => [...prevThreads, updatedThread]);
-    } catch (error) {
-      console.error('Failed to unbookmark thread:', error);
-      // You might want to show an error message to the user here
-    }
-  };
+const handleUnbookmark = async (thread) => {
+  try {
+    const updatedThread = await handleUpdateThread(thread, false);
+    setBookmarkedThreads(prevThreads => prevThreads.filter(t => t.id !== thread.id));
+    setRegularThreads(prevThreads => [...prevThreads, updatedThread]);
+  } catch (error) {
+    console.error('Failed to unbookmark thread:', error);
+  }
+};
 
   // Thread component with action buttons
   const ThreadWithActions = ({ userData, onClick, isBookmarked = false }) => {
@@ -172,42 +224,46 @@ export default function ContactsList({ onClick, onDelete }) {
   );
 
   return (
-    <div className="grow lg:shrink-0 scrollbar-hide overflow-y-auto lg:max-w-xs">
+    <div className="h-full w-full flex flex-col bg-white shadow-lg lg:shadow-none">
       <ThreadHeader onSearch={handleSearch} />
-      <div className="p-6">
-        <p className="flex items-center text-gray-400">
-          <BookmarkSolidIcon className="w-5 h-5" />
-          <span className="uppercase text-sm font-medium ml-3">Bookmarked</span>
-        </p>
-        <div>
-          {filteredBookmarkedThreads.map((userData) => (
-            <ThreadWithActions
-              userData={userData}
-              onClick={() => onClick(userData)}
-              key={userData.id}
-              isBookmarked={true}
-            />
-          ))}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6">
+          <p className="flex items-center text-gray-400">
+            <BookmarkSolidIcon className="w-5 h-5" />
+            <span className="uppercase text-sm font-medium ml-3">Bookmarked</span>
+          </p>
+          <div>
+            {filteredBookmarkedThreads.map((userData) => (
+              <ThreadWithActions
+                userData={userData}
+                onClick={() => onClick(userData)}
+                key={userData.id}
+                isBookmarked={true}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="p-6">
+          <p className="flex items-center text-gray-400">
+            <ChatBubbleOvalLeftIcon className="w-5 h-5" />
+            <span className="uppercase text-sm font-medium ml-3">
+              All Messages
+            </span>
+          </p>
+          <div>
+            {filteredRegularThreads.map((userData) => (
+              <ThreadWithActions
+                userData={userData}
+                onClick={() => onClick(userData)}
+                key={userData.id}
+                isBookmarked={false}
+              />
+            ))}
+          </div>
         </div>
       </div>
-      <div className="p-6">
-        <p className="flex items-center text-gray-400">
-          <ChatBubbleOvalLeftIcon className="w-5 h-5" />
-          <span className="uppercase text-sm font-medium ml-3">
-            All Messages
-          </span>
-        </p>
-        <div>
-          {filteredRegularThreads.map((userData) => (
-            <ThreadWithActions
-              userData={userData}
-              onClick={() => onClick(userData)}
-              key={userData.id}
-              isBookmarked={false}
-            />
-          ))}
-          <CreateThreadButton />
-        </div>
+      <div className="p-4 border-t border-gray-100 mt-auto">
+        <CreateThreadButton />
       </div>
     </div>
   );
