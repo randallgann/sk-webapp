@@ -261,9 +261,9 @@ const handleUnbookmark = async (thread) => {
             ))}
           </div>
         </div>
-      </div>
-      <div className="p-4 border-t border-gray-100 mt-auto">
-        <CreateThreadButton />
+        <div className="p-4">
+          <CreateThreadButton />
+        </div>
       </div>
     </div>
   );
