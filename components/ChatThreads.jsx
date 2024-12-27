@@ -224,7 +224,7 @@ const handleUnbookmark = async (thread) => {
   );
 
   return (
-    <div className="h-full w-full flex flex-col bg-white shadow-lg lg:shadow-none">
+    <div className="h-full w-full flex flex-col bg-white shadow-lg lg:shadow-none h-screen">
       <ThreadHeader onSearch={handleSearch} />
       <div className="flex-1 overflow-y-auto">
         <div className="p-6">
