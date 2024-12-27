@@ -26,7 +26,7 @@ function HomePage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden relative overflow-hidden">
       <Head>
         <title>Mikey & Me Chat</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
