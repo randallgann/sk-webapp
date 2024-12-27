@@ -40,7 +40,7 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
 
   return (
     
-    <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
+    <div className="flex flex-col-reverse grow p-6 bg-chat scrollbar-hide overflow-y-auto">
       {sortedMessages.map((message) => (
         <div key={message.id} className="py-3">
           <Message currentUser={message.isCurrentUser}>
