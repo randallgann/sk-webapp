@@ -227,7 +227,7 @@ export default function Chat({ thread, isVisible, onClick }) {
                 <SuggestedQuestions onQuestionClick={handleQuestionClick} />
             </div>
 
-            <div className="flex flex-col h-[calc(100%-6rem)] overflow-hidden">
+            <div className="flex flex-col flex-grow overflow-hidden">
             {/* Chat Body with status */}
             <div className="flex-1 overflow-y-auto">
                 <ChatBody 
