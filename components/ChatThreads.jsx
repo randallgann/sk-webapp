@@ -12,7 +12,7 @@ import { BookmarkIcon as BookmarkOutlineIcon } from "@heroicons/react/24/outline
 import ThreadHeader from "./ThreadHeader";
 import { ThreadService } from '../utils/apiService';
 
-export default function ContactsList({ onClick, onDelete }) {
+export default function ChatThreadsList({ onClick, onDelete }) {
   const [query, setQuery] = useState("");
   const [regularThreads, setRegularThreads] = useState([]);
   const [bookmarkedThreads, setBookmarkedThreads] = useState([]);
