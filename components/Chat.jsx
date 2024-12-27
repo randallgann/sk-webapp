@@ -228,8 +228,7 @@ export default function Chat({ thread, isVisible, onClick }) {
             </div>
 
             <div className="flex flex-col flex-grow overflow-hidden">
-            {/* Chat Body with status */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Chat Body with status */}         
                 <ChatBody 
                     thread={currentThread}
                     messages={messages}
@@ -237,8 +236,7 @@ export default function Chat({ thread, isVisible, onClick }) {
                     botStatus={botStatus}
                     isLoading={isLoading}
                     error={error}
-                />
-            </div>
+                />           
 
             {/* Message Input */}
             <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100">

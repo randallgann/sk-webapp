@@ -14,7 +14,7 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
   // Show empty state when no messages and not typing
   if (!messages?.length && !isTyping) {
     return (
-      <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
+      <div className="flex-1 flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
         <div className="flex flex-col items-center justify-center h-full space-y-4">
           <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
             <ChatBubbleBottomCenterIcon className="w-8 h-8 text-gray-400" />
