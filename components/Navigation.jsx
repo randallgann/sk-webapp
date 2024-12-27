@@ -4,7 +4,7 @@ import { GIRL_3_IMAGE } from "../utils/images";
 
 export default function Navigation() {
   return (
-    <nav className="relative flex lg:flex-col items-center justify-between p-3 lg:p-6 lg:py-12 bg-nav lg:order-first">
+    <nav className="relative flex lg:flex-col items-center justify-between p-3 lg:p-6 lg:py-12 bg-nav lg:order-first h-full lg:h-screen">
       <a
         className="w-8 h-8 text-white hidden lg:block"
         href="#"
