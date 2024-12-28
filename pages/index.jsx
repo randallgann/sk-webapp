@@ -63,14 +63,14 @@ function HomePage() {
       </div>
 
       {/* Main chat area */}
-      <div className="flex-1 h-full lg:ml-0">
+      {/* <div className="flex-1 h-full lg:ml-0"> */}
         <Chat
           thread={activeThread}
           isVisible={chatVisible}
           onClick={() => setChatVisible(false)}
           className="h-full"
         />
-      </div>
+      {/* </div> */}
 
       <Navigation />
     </div>

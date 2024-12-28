@@ -16,7 +16,7 @@ export default function MessageContent({
 
   return (
     <div
-      className={`max-w-md ${styles.padding} rounded-2xl overflow-hidden ${
+      className={`max-w-[85%] md:max-w-md ${styles.padding} rounded-2xl overflow-hidden whitespace-pre-wrap break-words ${
         index === 0 && styles.tail
       } ${styles.background}`}
     >

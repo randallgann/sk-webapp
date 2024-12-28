@@ -39,7 +39,8 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
   );
 
   return (
-    <div className="flex flex-col grow p-6 bg-chat justify-end">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden bg-chat">
+    <div className="flex flex-col p-6 w-full max-w-full">
       {sortedMessages.map((message) => (
         <div key={message.id} className="py-3">
           <Message currentUser={message.isCurrentUser}>
@@ -68,6 +69,7 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
       )}
       
       <div ref={scrollTo}></div>
+    </div>
     </div>
   );
 }

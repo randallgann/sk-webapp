@@ -204,13 +204,13 @@ export default function Chat({ thread, isVisible, onClick }) {
     return (
         
         <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-        lg:translate-x-0 relative z-10 w-full lg:static lg:w-auto transition border-x border-gray-100 bg-white flex flex-col h-screen`}>
+        lg:translate-x-0 relative z-10 w-full lg:static lg:w-auto transition border-x border-gray-100 bg-white flex flex-col h-screen mt-16 lg:mt-0`}>
         //     {/* Header */}
-            <div className="flex-none flex items-center h-24 p-6 border-b border-gray-100">
+            <div className="flex-none flex items-center h-24 p-6 border-b border-gray-100 bg-white">
                 <SuggestedQuestions onQuestionClick={handleQuestionClick} />
             </div>
 
-            <div className="flex flex-col flex-grow overflow-hidden h-screen">
+            <div className="flex flex-col flex-1 min-h-0">
             {/* Chat Body with status */}         
                 <ChatBody 
                     thread={currentThread}
@@ -222,7 +222,7 @@ export default function Chat({ thread, isVisible, onClick }) {
                 />           
 
             {/* Message Input */}
-            <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100">
+            <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100 bg-white">
                 <button
                     className="shrink-0 text-gray-400"
                     type="button"
