@@ -5,12 +5,13 @@ export class SignalRService {
     constructor() {
         this.connection = null;
         this.connected = false;
+        this.hubUrl = `${process.env.NEXT_PUBLIC_API_URL}/messageRelayHub` || 'http://localhost:8080/messageRelayHub';
     }
 
     async startConnection() {
         try {
             this.connection = new signalR.HubConnectionBuilder()
-                .withUrl('http://localhost:8080/messageRelayHub', {
+                .withUrl(this.hubUrl, {
                     skipNegotiation: true,
                     transport: signalR.HttpTransportType.WebSockets
                 })
