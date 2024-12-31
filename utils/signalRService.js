@@ -1,19 +1,30 @@
 // /utils/signalRService.js
 import * as signalR from '@microsoft/signalr';
+import getConfig from 'next/config'
+
 
 export class SignalRService {
     constructor() {
+        const { publicRuntimeConfig } = getConfig()
+        const envUrl = process.env.NEXT_PUBLIC_API_URL
+        const configUrl = publicRuntimeConfig.API_URL
+        // Add debug logging
+        console.log('PublicRuntimeConfig:', publicRuntimeConfig);
+        console.log('API_URL from config:', publicRuntimeConfig.API_URL);
+        console.log('Environment URL:', envUrl);
+        console.log('Config URL:', configUrl);
         this.connection = null;
         this.connected = false;
-        this.hubUrl = `${process.env.NEXT_PUBLIC_API_URL}/messageRelayHub` || 'http://localhost:8080/messageRelayHub';
+        this.hubUrl =  `${envUrl}/messageRelayHub` || `${publicRuntimeConfig.API_URL}/messageRelayHub` || 'http://localhost:8080/messageRelayHub';
+        console.log('Final hubUrl:', this.hubUrl);
     }
 
     async startConnection() {
         try {
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl(this.hubUrl, {
-                    skipNegotiation: true,
-                    transport: signalR.HttpTransportType.WebSockets
+                    // Remove skipNegotiation: true
+                    transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
                 })
                 .withAutomaticReconnect({
                     nextRetryDelayInMilliseconds: retryContext => {

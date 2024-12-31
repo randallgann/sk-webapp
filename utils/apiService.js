@@ -1,9 +1,12 @@
 // /utils/apiService.js
 import axios from 'axios';
 import { mapChatSessionToThread, mapThreadToChatSession } from './chatMappers';
+import getConfig from 'next/config'
+
+const { publicRuntimeConfig } = getConfig()
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  baseURL: publicRuntimeConfig.API_URL || 'http://localhost:8080',
   headers: {
     'Content-Type': 'application/json',
     'accept': '*/*'

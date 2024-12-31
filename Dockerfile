@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Add this line before the build
+ENV NEXT_PUBLIC_API_URL=https://skwebapi8080http-879200966247.us-south1.run.app
+
 # Build the Next.js application
 RUN npm run build
 
