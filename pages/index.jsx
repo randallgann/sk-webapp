@@ -50,6 +50,10 @@ function HomePage() {
         />
       )}
 
+      <div className="hidden lg:block">
+        <Navigation />
+      </div>
+
       {/* ChatThreads wrapper */}
       <div
         className={`fixed lg:relative lg:translate-x-0 z-40 h-full transition-transform duration-300 ease-in-out
@@ -63,17 +67,12 @@ function HomePage() {
       </div>
 
       {/* Main chat area */}
-      {/* <div className="flex-1 h-full lg:ml-0"> */}
-        <Chat
-          thread={activeThread}
-          isVisible={chatVisible}
-          onClick={() => setChatVisible(false)}
-          className="h-full"
-        />
-      {/* </div> */}
-      <div className="hidden lg:block">
-        <Navigation />
-      </div>
+      <Chat
+        thread={activeThread}
+        isVisible={chatVisible}
+        onClick={() => setChatVisible(false)}
+        className="h-full"
+      />
     </div>
   );
 }
