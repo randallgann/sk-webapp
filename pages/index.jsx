@@ -1,7 +1,7 @@
 // HomePage.jsx
 import { useState } from "react";
 import Head from "next/head";
-import { Bars3Icon } from "@heroicons/react/24/solid";
+import { ChevronDoubleLeftIcon } from "@heroicons/react/24/solid";
 import ChatThreads from "../components/ChatThreads";
 import Navigation from "../components/Navigation";
 import Chat from "../components/Chat";
@@ -39,7 +39,7 @@ function HomePage() {
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50"
         aria-label="Toggle chat threads"
       >
-        <Bars3Icon className="w-6 h-6 text-gray-600" />
+        <ChevronDoubleLeftIcon className="w-6 h-6 text-gray-600" />
       </button>
 
       {/* Backdrop overlay */}
