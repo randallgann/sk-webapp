@@ -228,7 +228,6 @@ export default function Chat({ thread, isVisible, onClick }) {
                     type="button"
                     aria-label="Add media to message"
                 >
-                    <PlusCircleIcon className="w-6 h-6" />
                 </button>
                 <div className="relative flex w-full max-h-24 overflow-hidden">
                     <div
