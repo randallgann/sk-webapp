@@ -71,7 +71,9 @@ function HomePage() {
           className="h-full"
         />
       {/* </div> */}
-      <Navigation />
+      <div className="hidden lg:block">
+        <Navigation />
+      </div>
     </div>
   );
 }
