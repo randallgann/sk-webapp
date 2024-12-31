@@ -206,7 +206,7 @@ export default function Chat({ thread, isVisible, onClick }) {
         <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
         lg:translate-x-0 relative z-10 w-full lg:static lg:w-auto transition border-x border-gray-100 bg-white flex flex-col h-screen mt-16 lg:mt-0`}>
         //     {/* Header */}
-            <div className="flex-none flex items-center h-24 p-6 border-b border-gray-100 bg-white">
+            <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
                 <SuggestedQuestions onQuestionClick={handleQuestionClick} />
             </div>
 
