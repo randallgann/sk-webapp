@@ -203,7 +203,7 @@ export default function Chat({ thread, isVisible, onClick }) {
 
     return (
     <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-        lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0`}>
+        lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0 max-w-[800px] mx-auto`}>
         <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
             <SuggestedQuestions onQuestionClick={handleQuestionClick} />
         </div>

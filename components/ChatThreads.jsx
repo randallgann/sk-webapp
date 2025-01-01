@@ -228,10 +228,10 @@ const handleUnbookmark = async (thread) => {
       <ThreadHeader onSearch={handleSearch} />
       <div className="flex-1 overflow-y-auto">
         <div className="p-6">
-          <p className="flex items-center text-gray-400">
+          {/* <p className="flex items-center text-gray-400">
             <BookmarkSolidIcon className="w-5 h-5" />
             <span className="uppercase text-sm font-medium ml-3">Bookmarked</span>
-          </p>
+          </p> */}
           <div>
             {filteredBookmarkedThreads.map((userData) => (
               <ThreadWithActions

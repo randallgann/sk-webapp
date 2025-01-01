@@ -29,9 +29,10 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
         if (isMounted) {
           console.log('Fetched questions:', fetchedQuestions);
           // Set 5 random questions instead of all questions
-          const randomQuestions = getRandomQuestions(fetchedQuestions);
-          console.log('Setting random questions:', randomQuestions);
-          setQuestions(randomQuestions);
+          //const randomQuestions = getRandomQuestions(fetchedQuestions);
+          //console.log('Setting random questions:', randomQuestions);
+          console.log('Setting fetched questions');
+          setQuestions(fetchedQuestions);
           setError(null);
         }
       } catch (err) {
