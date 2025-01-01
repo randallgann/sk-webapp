@@ -106,8 +106,8 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   return (
     <div className="h-20 flex-none w-full bg-gray-50 border-b border-gray-200">
       {questions.length > 0 ? (
-        <div className="h-full flex items-center px-4 overflow-x-auto scrollbar-hide">
-          <div className="flex gap-3 whitespace-nowrap">
+        <div className="h-full flex items-center px-4 marquee-container">
+          <div className="marquee-content">
             {questions.map((q) => (
               <button
                 key={q.id}
