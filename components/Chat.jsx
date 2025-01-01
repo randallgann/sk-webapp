@@ -202,14 +202,13 @@ export default function Chat({ thread, isVisible, onClick }) {
     }
 
     return (
-        
-        <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-        lg:translate-x-0 relative z-10 w-full lg:static lg:w-auto transition border-x border-gray-100 bg-white flex flex-col h-screen mt-16 lg:mt-0`}>
-            <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
-                <SuggestedQuestions onQuestionClick={handleQuestionClick} />
-            </div>
+    <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
+        lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0`}>
+        <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
+            <SuggestedQuestions onQuestionClick={handleQuestionClick} />
+        </div>
 
-            <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex flex-col flex-1 min-h-0">
             {/* Chat Body with status */}         
                 <ChatBody 
                     thread={currentThread}
@@ -253,7 +252,7 @@ export default function Chat({ thread, isVisible, onClick }) {
                     <ArrowRightIcon className="w-6 h-6 text-white" />
                 </button>
             </div>
-            </div>
         </div>
+    </div>
     );
 }
