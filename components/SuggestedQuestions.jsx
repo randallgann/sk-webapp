@@ -15,6 +15,11 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
     return shuffled.slice(0, count);
   };
 
+  // Function to get all questions
+  const getAllQuestions = (questionsArray) => {
+    return [...questionsArray];
+  };
+
   useEffect(() => {
     let isMounted = true;
 
