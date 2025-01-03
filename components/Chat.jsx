@@ -192,7 +192,7 @@ export default function Chat({ thread, isVisible, onClick }) {
         <SuggestedQuestions onQuestionClick={handleQuestionClick} />
         </div>
         
-            <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} lg:translate-x-0 fixed inset-0 h-full lg:relative lg:inset-auto flex flex-col grow w-full border-x border-gray-100 bg-white z-10 transition`}>
+            <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} lg:translate-x-0 fixed inset-0 h-full lg:relative lg:inset-auto flex flex-col grow w-full border-x border-gray-100 bg-white z-10 transition mx-auto`}>
                 <div className="flex items-center justify-center h-full">
                     <p className="text-gray-500">Select a thread or create a new one to start chatting</p>
                 </div>
