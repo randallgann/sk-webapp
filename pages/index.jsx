@@ -8,7 +8,7 @@ import Chat from "../components/Chat";
 import Profile from "../components/Profile";
 
 function HomePage() {
-  const [chatVisible, setChatVisible] = useState(false);
+  const [chatVisible, setChatVisible] = useState(true);
   const [activeThread, setActiveThread] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -21,12 +21,12 @@ function HomePage() {
   const handleThreadDelete = (threadId) => {
     if (activeThread?.id === threadId) {
       setActiveThread(null);
-      setChatVisible(false);
+      setChatVisible(true);
     }
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden relative overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden relative">
       <Head>
         <title>Mikey & Me Chat</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
@@ -64,9 +64,9 @@ function HomePage() {
 
       {/* ChatThreads wrapper */}
       <div
-        className={`fixed lg:relative lg:translate-x-0 z-40 h-full transition-transform duration-300 ease-in-out
+        className={`fixed lg:relative lg:translate-x-0 z-40 h-full transition-transform duration-300 ease-in-out flex-shrink-0
           ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:block w-[320px]`}
+          md:block w-[320px]`}
       >
         <ChatThreads
           onClick={handleThreadClick}
@@ -75,11 +75,11 @@ function HomePage() {
       </div>
 
       {/* Main chat area */}
-      <div className="flex-1 flex justify-center">
+      <div className="flex flex-1 justify-center min-w-0">
       <Chat
         thread={activeThread}
         isVisible={chatVisible}
-        onClick={() => setChatVisible(false)}
+        onClick={() => setChatVisible(true)}
         className="h-full"
       />
       </div>

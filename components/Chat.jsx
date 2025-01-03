@@ -2,12 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChatBody from "./ChatBody";
 import SuggestedQuestions from "./SuggestedQuestions";
 import { chatService } from '../utils/chatService';
-import {
-    PlusCircleIcon,
-    ArrowRightIcon,
-    ArrowLeftIcon,
-} from "@heroicons/react/24/outline";
-import Avatar from "./Avatar";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export default function Chat({ thread, isVisible, onClick }) {
     const [currentThread, setCurrentThread] = useState(null);
@@ -181,13 +176,12 @@ export default function Chat({ thread, isVisible, onClick }) {
 
         // Automatically send the message
         handleMessageSubmit();
-    }, []);  
+    }, [handleMessageSubmit]);  
 
     // If no thread is selected or thread was deleted, show empty state
     if (!thread || !currentThread) {
         return (
-        <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-            lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0 mx-auto`}>
+        <div className="flex flex-col w-full h-screen mx-auto">
         
             <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
                 <SuggestedQuestions onQuestionClick={handleQuestionClick} />
@@ -201,9 +195,8 @@ export default function Chat({ thread, isVisible, onClick }) {
     }
 
     return (
-    <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-        lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0 mx-auto`}>
-        <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
+    <div className="flex flex-col w-full h-screen mx-auto">
+        <div className="sticky top-0 z-20 flex items-center border-b border-gray-100 bg-white">
             <SuggestedQuestions onQuestionClick={handleQuestionClick} />
         </div>
 
