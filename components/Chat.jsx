@@ -186,16 +186,15 @@ export default function Chat({ thread, isVisible, onClick }) {
     // If no thread is selected or thread was deleted, show empty state
     if (!thread || !currentThread) {
         return (
-        <div className="flex flex-col h-full">
-        {/* Our suggested questions at the top */}
-        <div className="flex-none h-20">
-        <SuggestedQuestions onQuestionClick={handleQuestionClick} />
-        </div>
+        <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
+            lg:translate-x-0 relative z-10 w-full lg:static transition border-x border-gray-100 bg-white flex flex-col h-screen lg:mt-0 mx-auto`}>
         
-            <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} lg:translate-x-0 fixed inset-0 h-full lg:relative lg:inset-auto flex flex-col grow w-full border-x border-gray-100 bg-white z-10 transition mx-auto`}>
-                <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-500">Select a thread or create a new one to start chatting</p>
-                </div>
+            <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
+                <SuggestedQuestions onQuestionClick={handleQuestionClick} />
+            </div>
+        
+            <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 text-center">Select a thread or create a new one to start chatting</p>
             </div>
         </div>
         );
