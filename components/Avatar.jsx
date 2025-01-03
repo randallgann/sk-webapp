@@ -1,4 +1,3 @@
-import { GIRL_2_IMAGE } from "../utils/images";
 
 export default function Avatar({ isOnline, srcImage, textImage }) {
   const onlineStyles =
@@ -12,7 +11,7 @@ export default function Avatar({ isOnline, srcImage, textImage }) {
           className="w-full h-full rounded-full overflow-hidden object-cover"
           width="48"
           height="48"
-          src={srcImage ?? GIRL_2_IMAGE}
+          src={srcImage ?? "/mm-logo-insta.png"}
           alt="Avatar"
         />
       ) : null}
