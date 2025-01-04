@@ -4,8 +4,6 @@ import { ThreadService } from '../utils/apiService';
 const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
-  const [showLeftScroll, setShowLeftScroll] = useState(false);
-  const [showRightScroll, setShowRightScroll] = useState(false);
 
   const scrollContainerRef = useRef(null);
 
@@ -13,11 +11,6 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   const getRandomQuestions = (questionsArray, count = 5) => {
     const shuffled = [...questionsArray].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
-  };
-
-  // Function to get all questions
-  const getAllQuestions = (questionsArray) => {
-    return [...questionsArray];
   };
 
   useEffect(() => {
@@ -52,6 +45,11 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
       clearInterval(refreshInterval);
     };
   }, []);
+
+  // If you want to split questions between two lines
+  const halfIndex = Math.ceil(questions.length / 2);
+  const topLineQuestions = questions.slice(0, halfIndex);
+  const bottomLineQuestions = questions.slice(halfIndex);
 
   // Check scroll position to show/hide scroll buttons
   const checkScroll = () => {
@@ -110,22 +108,67 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   }
 
   return (
-    <div className="h-20 flex-none w-full bg-gray-50 border-b border-gray-200">
+    <div className="flex-none w-full bg-gray-50 border-b border-gray-200">
       {questions.length > 0 ? (
-        <div className="h-full flex items-center px-4 marquee-container">
-          <div className="marquee-content">
-            {questions.map((q) => (
-              <button
-                key={q.id}
-                onClick={() => handleClick(q.content)}
-                className="flex-none px-4 py-2 text-sm bg-white rounded-full
-                         border border-gray-200 hover:border-gray-300
-                         text-gray-600 hover:text-gray-800
-                         transition-colors duration-200"
-              >
-                {q.content}
-              </button>
-            ))}
+        <div className="h-full flex flex-col justify-center px-4">
+           {/* --- Top line of marquee --- */}
+          <div className="marquee-container">
+            <div className="marquee-content">
+              {topLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+              {topLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* --- Bottom line of marquee --- */}
+          <div className="marquee-container">
+            <div className="marquee-content">
+              {bottomLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+              {bottomLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       ) : (

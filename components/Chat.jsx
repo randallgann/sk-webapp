@@ -96,18 +96,21 @@ export default function Chat({ thread, isVisible, onClick }) {
         setBotStatus('');
         setIsTyping(false);
     }
-}, [currentThread?.id]);
+}, [currentThread?.id]); 
 
-    const handleMessageSubmit = async () => {
-    if (!message.trim() || !currentThread || isSending) return;
+    const handleMessageSubmit = async (overrideMessage = null) => {
+        // Decide which message to send
+        const actualMessage = overrideMessage ?? message.trim()
+        console.log('Message to send:', actualMessage);
+        if (!actualMessage || !currentThread || isSending) return;
 
-    setIsSending(true);
-    setIsTyping(true);
+        setIsSending(true);
+        setIsTyping(true);
 
     // Create and display user message immediately
     const userMessage = {
         id: Date.now().toString(),
-        content: message.trim(),
+        content: actualMessage.trim(),
         timestamp: new Date().toISOString(),
         authorRole: "User",
         userName: "User",
@@ -116,16 +119,14 @@ export default function Chat({ thread, isVisible, onClick }) {
 
     setMessages(prevMessages => [...prevMessages, userMessage]);
 
-    // Clear the input early
-    const sentMessage = message.trim();
-    setMessage('');
     if (inputRef.current) {
         inputRef.current.textContent = '';
     }
+    setMessage('');
 
     try {
         // Send message to server and get bot response
-        const response = await chatService.sendMessage(currentThread.id, sentMessage);
+        const response = await chatService.sendMessage(currentThread.id, actualMessage);
         
         if (response && response.variables) {
             const botResponseVar = response.variables.find(v => v.key === 'input');
@@ -144,14 +145,14 @@ export default function Chat({ thread, isVisible, onClick }) {
             setMessages(prevMessages => [...prevMessages, botMessage]);
         }
 
-    } catch (error) {
-        console.error('Failed to send message:', error);
-        // Optionally show an error to the user
-    } finally {
-        setIsSending(false);
-        setIsTyping(false);
-    }
-};
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            // Optionally show an error to the user
+        } finally {
+            setIsSending(false);
+            setIsTyping(false);
+        }
+    };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -160,23 +161,21 @@ export default function Chat({ thread, isVisible, onClick }) {
         }
     };
 
-    const handleInput = (e) => {
-        setMessage(e.currentTarget.textContent || '');
-    };
-
-    // Memoize the question click handler
-    const handleQuestionClick = useCallback((questionText) => {
-        // Set the message in state
-        setMessage(questionText);
-        
+        // Memoize the question click handler
+    const handleQuestionClick = useCallback((questionText) => {      
         // Update the contentEditable div
         if (inputRef.current) {
             inputRef.current.textContent = questionText;
         }
 
         // Automatically send the message
-        handleMessageSubmit();
-    }, [handleMessageSubmit]);  
+        handleMessageSubmit(questionText);
+    }, [handleMessageSubmit]); 
+
+    const handleInput = (e) => {
+        setMessage(e.currentTarget.textContent || '');
+    };
+
 
     // If no thread is selected or thread was deleted, show empty state
     if (!thread || !currentThread) {

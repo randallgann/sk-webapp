@@ -14,10 +14,10 @@ div#__next > div {
 
 @keyframes marquee {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(-100%);
+    transform: translateX(-50%);
   }
 }
 
@@ -29,8 +29,20 @@ div#__next > div {
 
 .marquee-content {
   display: inline-block;
-  animation: marquee 40s linear infinite;
-  max-width: 100%;
+  animation: marquee 15s linear infinite;
+  max-width: 200%;
+}
+
+@media (min-width: 768px) {
+  .marquee-content {
+    animation-duration: 35s; /* Slower on bigger tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  .marquee-content {
+    animation-duration: 45s; /* Even slower on desktops */
+  }
 }
 
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
@@ -48,19 +60,5 @@ div#__next > div {
   content: attr(data-placeholder);
   color: #8e8e8e;
   cursor: text;
-}
-
-/* Basic marquee animation */
-@keyframes marquee {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 15s linear infinite;
 }
 
