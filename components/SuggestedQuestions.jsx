@@ -38,7 +38,7 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
     };
 
     fetchQuestions();
-    const refreshInterval = setInterval(fetchQuestions, 5 * 60 * 1000);
+    const refreshInterval = setInterval(fetchQuestions, 30 * 1000);
 
     return () => {
       isMounted = false;
