@@ -7,10 +7,9 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
 
   const scrollContainerRef = useRef(null);
 
-   // Function to get 5 random questions from the array
-  const getRandomQuestions = (questionsArray, count = 5) => {
-    const shuffled = [...questionsArray].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+  // Function to randomize all questions in the array
+  const getRandomQuestions = (questionsArray) => {
+    return [...questionsArray].sort(() => 0.5 - Math.random());
   };
 
   useEffect(() => {
