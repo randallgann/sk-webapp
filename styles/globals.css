@@ -12,14 +12,14 @@ div#__next > div {
   overflow: hidden;
 }
 
-@keyframes marquee {
+/* @keyframes marquee {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
   }
-}
+} */
 
 .marquee-container {
   overflow: hidden;
@@ -29,21 +29,21 @@ div#__next > div {
 
 .marquee-content {
   display: inline-block;
-  animation: marquee 15s linear infinite;
+  /* animation: marquee 15s linear infinite; */
   max-width: 200%;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .marquee-content {
-    animation-duration: 35s; /* Slower on bigger tablets */
+    animation-duration: 35s;
   }
 }
 
 @media (min-width: 1024px) {
   .marquee-content {
-    animation-duration: 45s; /* Even slower on desktops */
+    animation-duration: 45s;
   }
-}
+} */
 
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
 .scrollbar-hide::-webkit-scrollbar {

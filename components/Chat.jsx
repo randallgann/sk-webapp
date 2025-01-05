@@ -237,7 +237,7 @@ export default function Chat({ thread, isVisible, onClick }) {
                     } rounded-full overflow-hidden`}
                     type="button"
                     aria-label="Submit"
-                    onClick={handleMessageSubmit}
+                    onClick={() => handleMessageSubmit()}
                     disabled={isSending}
                 >
                     <ArrowRightIcon className="w-6 h-6 text-white" />

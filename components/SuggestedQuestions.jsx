@@ -7,6 +7,14 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
 
   const scrollContainerRef = useRef(null);
 
+    // Refs for top line
+  const topLineRef = useRef(null);      // The container (overflow hidden)
+  const topContentRef = useRef(null);   // The actual scrolling content
+
+  // Refs for bottom line
+  const bottomLineRef = useRef(null);
+  const bottomContentRef = useRef(null);
+
   // Function to randomize all questions in the array
   const getRandomQuestions = (questionsArray) => {
     return [...questionsArray].sort(() => 0.5 - Math.random());
@@ -38,7 +46,7 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
     };
 
     fetchQuestions();
-    const refreshInterval = setInterval(fetchQuestions, 30 * 1000);
+    const refreshInterval = setInterval(fetchQuestions, 5 * 60 * 1000);
 
     return () => {
       isMounted = false;
@@ -50,6 +58,56 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   const halfIndex = Math.ceil(questions.length / 2);
   const topLineQuestions = questions.slice(0, halfIndex);
   const bottomLineQuestions = questions.slice(halfIndex);
+
+   // -------------
+  //   MARQUEE JS
+  // -------------
+  useEffect(() => {
+    // Reusable function to init the "infinite scroll"
+    function initMarqueeAnimation(containerEl, contentEl, speed = 0.5) {
+      let xPos = 0; // how far we've scrolled left (negative)
+      let reqId;
+
+      function step() {
+        if (!containerEl || !contentEl) return;
+
+        xPos -= speed; // move left each frame
+        contentEl.style.transform = `translateX(${xPos}px)`;
+
+        // If we've scrolled enough that the first "half" is fully offscreen,
+        // we can reset xPos to 0. The "half" is basically the width of one copy
+        const contentWidth = contentEl.scrollWidth / 2;
+        if (Math.abs(xPos) >= contentWidth) {
+          // jump back by the contentWidth so the second copy is effectively the new start
+          xPos += contentWidth;
+        }
+
+        reqId = requestAnimationFrame(step);
+      }
+
+      step(); // start animating
+
+      return () => cancelAnimationFrame(reqId); // cleanup
+    }
+
+    // Start marquee for top line
+    let topCleanup;
+    if (topLineRef.current && topContentRef.current) {
+      topCleanup = initMarqueeAnimation(topLineRef.current, topContentRef.current, 0.5);
+    }
+
+    // Start marquee for bottom line
+    let bottomCleanup;
+    if (bottomLineRef.current && bottomContentRef.current) {
+      bottomCleanup = initMarqueeAnimation(bottomLineRef.current, bottomContentRef.current, 0.3);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (topCleanup) topCleanup();
+      if (bottomCleanup) bottomCleanup();
+    };
+  }, [questions]);
 
   // Check scroll position to show/hide scroll buttons
   const checkScroll = () => {
@@ -112,8 +170,8 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
       {questions.length > 0 ? (
         <div className="h-full flex flex-col justify-center px-4">
            {/* --- Top line of marquee --- */}
-          <div className="marquee-container">
-            <div className="marquee-content">
+          <div className="marquee-container" ref={topLineRef}>
+            <div className="marquee-content" ref={topContentRef}>
               {topLineQuestions.map((q) => (
                 <button
                   key={q.id}
@@ -142,8 +200,8 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
           </div>
 
           {/* --- Bottom line of marquee --- */}
-          <div className="marquee-container">
-            <div className="marquee-content">
+          <div className="marquee-container" ref={bottomLineRef}>
+            <div className="marquee-content" ref={bottomContentRef}>
               {bottomLineQuestions.map((q) => (
                 <button
                   key={q.id}
