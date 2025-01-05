@@ -22,12 +22,12 @@ export default function Message({ currentUser, children, userName }) {
 
   return (
     <div className={`flex ${styles.main}`}>
-      <Avatar srcImage={currentUser ? GIRL_3_IMAGE : GIRL_1_IMAGE} />
+      <Avatar srcImage={currentUser ? GIRL_3_IMAGE : "mm-logo-insta.png"} />
       <div className={`${styles.wrapper}`}>
         <div className={`flex items-center mb-3 ${styles.user}`}>
           <span className="font-bold">{displayName}</span>
           <span className={`text-sm text-gray-400 shrink-0 ${styles.time}`}>
-            4:30 AM
+            {currentTime}
           </span>
         </div>
         <div className={`flex flex-col gap-3 ${styles.alignItems}`}>

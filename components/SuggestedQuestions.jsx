@@ -4,15 +4,20 @@ import { ThreadService } from '../utils/apiService';
 const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
-  const [showLeftScroll, setShowLeftScroll] = useState(false);
-  const [showRightScroll, setShowRightScroll] = useState(false);
 
   const scrollContainerRef = useRef(null);
 
-   // Function to get 5 random questions from the array
-  const getRandomQuestions = (questionsArray, count = 5) => {
-    const shuffled = [...questionsArray].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    // Refs for top line
+  const topLineRef = useRef(null);      // The container (overflow hidden)
+  const topContentRef = useRef(null);   // The actual scrolling content
+
+  // Refs for bottom line
+  const bottomLineRef = useRef(null);
+  const bottomContentRef = useRef(null);
+
+  // Function to randomize all questions in the array
+  const getRandomQuestions = (questionsArray) => {
+    return [...questionsArray].sort(() => 0.5 - Math.random());
   };
 
   useEffect(() => {
@@ -24,8 +29,10 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
         if (isMounted) {
           console.log('Fetched questions:', fetchedQuestions);
           // Set 5 random questions instead of all questions
+          //const randomQuestions = getRandomQuestions(fetchedQuestions);
+          //console.log('Setting random questions:', randomQuestions);
+          console.log('Setting fetched questions');
           const randomQuestions = getRandomQuestions(fetchedQuestions);
-          console.log('Setting random questions:', randomQuestions);
           setQuestions(randomQuestions);
           setError(null);
         }
@@ -46,6 +53,61 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
       clearInterval(refreshInterval);
     };
   }, []);
+
+  // If you want to split questions between two lines
+  const halfIndex = Math.ceil(questions.length / 2);
+  const topLineQuestions = questions.slice(0, halfIndex);
+  const bottomLineQuestions = questions.slice(halfIndex);
+
+   // -------------
+  //   MARQUEE JS
+  // -------------
+  useEffect(() => {
+    // Reusable function to init the "infinite scroll"
+    function initMarqueeAnimation(containerEl, contentEl, speed = 0.5) {
+      let xPos = 0; // how far we've scrolled left (negative)
+      let reqId;
+
+      function step() {
+        if (!containerEl || !contentEl) return;
+
+        xPos -= speed; // move left each frame
+        contentEl.style.transform = `translateX(${xPos}px)`;
+
+        // If we've scrolled enough that the first "half" is fully offscreen,
+        // we can reset xPos to 0. The "half" is basically the width of one copy
+        const contentWidth = contentEl.scrollWidth / 2;
+        if (Math.abs(xPos) >= contentWidth) {
+          // jump back by the contentWidth so the second copy is effectively the new start
+          xPos += contentWidth;
+        }
+
+        reqId = requestAnimationFrame(step);
+      }
+
+      step(); // start animating
+
+      return () => cancelAnimationFrame(reqId); // cleanup
+    }
+
+    // Start marquee for top line
+    let topCleanup;
+    if (topLineRef.current && topContentRef.current) {
+      topCleanup = initMarqueeAnimation(topLineRef.current, topContentRef.current, 0.5);
+    }
+
+    // Start marquee for bottom line
+    let bottomCleanup;
+    if (bottomLineRef.current && bottomContentRef.current) {
+      bottomCleanup = initMarqueeAnimation(bottomLineRef.current, bottomContentRef.current, 0.3);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (topCleanup) topCleanup();
+      if (bottomCleanup) bottomCleanup();
+    };
+  }, [questions]);
 
   // Check scroll position to show/hide scroll buttons
   const checkScroll = () => {
@@ -104,22 +166,67 @@ const SuggestedQuestions = React.memo(({ onQuestionClick }) => {
   }
 
   return (
-    <div className="h-20 flex-none w-full bg-gray-50 border-b border-gray-200">
+    <div className="flex-none w-full bg-gray-50 border-b border-gray-200">
       {questions.length > 0 ? (
-        <div className="h-full flex items-center px-4 overflow-x-auto scrollbar-hide">
-          <div className="flex gap-3 whitespace-nowrap">
-            {questions.map((q) => (
-              <button
-                key={q.id}
-                onClick={() => handleClick(q.content)}
-                className="flex-none px-4 py-2 text-sm bg-white rounded-full
-                         border border-gray-200 hover:border-gray-300
-                         text-gray-600 hover:text-gray-800
-                         transition-colors duration-200"
-              >
-                {q.content}
-              </button>
-            ))}
+        <div className="h-full flex flex-col justify-center px-4">
+           {/* --- Top line of marquee --- */}
+          <div className="marquee-container" ref={topLineRef}>
+            <div className="marquee-content" ref={topContentRef}>
+              {topLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+              {topLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* --- Bottom line of marquee --- */}
+          <div className="marquee-container" ref={bottomLineRef}>
+            <div className="marquee-content" ref={bottomContentRef}>
+              {bottomLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+              {bottomLineQuestions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => handleClick(q.content)}
+                  className="inline-block px-4 py-2 m-1 text-sm bg-white rounded-full
+                             border border-gray-200 hover:border-gray-300
+                             text-gray-600 hover:text-gray-800
+                             transition-colors duration-200"
+                >
+                  {q.content}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       ) : (

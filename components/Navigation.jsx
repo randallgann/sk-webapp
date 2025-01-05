@@ -4,17 +4,17 @@ import { GIRL_3_IMAGE } from "../utils/images";
 
 export default function Navigation() {
   return (
-    <nav className="relative flex lg:flex-col items-center justify-between p-3 lg:p-6 lg:py-12 bg-nav lg:order-first">
+    <nav className="relative flex lg:flex-col items-center justify-between p-3 lg:p-6 lg:py-12 bg-nav lg:order-first h-full lg:h-screen">
       <a
-        className="w-8 h-8 text-white hidden lg:block"
+        className="w-24 h-24 text-white hidden lg:block"
         href="#"
         aria-label="To homepage"
       >
         <img
-          width="42"
-          height="42"
+          width="100"
+          height="100"
           className="w-full h-full object-cover object-center"
-          src="logo.png"
+          src="mm-logo-insta.png"
           alt="Logo"
         />
       </a>

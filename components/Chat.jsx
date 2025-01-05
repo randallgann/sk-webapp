@@ -2,12 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ChatBody from "./ChatBody";
 import SuggestedQuestions from "./SuggestedQuestions";
 import { chatService } from '../utils/chatService';
-import {
-    PlusCircleIcon,
-    ArrowRightIcon,
-    ArrowLeftIcon,
-} from "@heroicons/react/24/outline";
-import Avatar from "./Avatar";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export default function Chat({ thread, isVisible, onClick }) {
     const [currentThread, setCurrentThread] = useState(null);
@@ -101,18 +96,21 @@ export default function Chat({ thread, isVisible, onClick }) {
         setBotStatus('');
         setIsTyping(false);
     }
-}, [currentThread?.id]);
+}, [currentThread?.id]); 
 
-    const handleMessageSubmit = async () => {
-    if (!message.trim() || !currentThread || isSending) return;
+    const handleMessageSubmit = async (overrideMessage = null) => {
+        // Decide which message to send
+        const actualMessage = overrideMessage ?? message.trim()
+        console.log('Message to send:', actualMessage);
+        if (!actualMessage || !currentThread || isSending) return;
 
-    setIsSending(true);
-    setIsTyping(true);
+        setIsSending(true);
+        setIsTyping(true);
 
     // Create and display user message immediately
     const userMessage = {
         id: Date.now().toString(),
-        content: message.trim(),
+        content: actualMessage.trim(),
         timestamp: new Date().toISOString(),
         authorRole: "User",
         userName: "User",
@@ -121,16 +119,14 @@ export default function Chat({ thread, isVisible, onClick }) {
 
     setMessages(prevMessages => [...prevMessages, userMessage]);
 
-    // Clear the input early
-    const sentMessage = message.trim();
-    setMessage('');
     if (inputRef.current) {
         inputRef.current.textContent = '';
     }
+    setMessage('');
 
     try {
         // Send message to server and get bot response
-        const response = await chatService.sendMessage(currentThread.id, sentMessage);
+        const response = await chatService.sendMessage(currentThread.id, actualMessage);
         
         if (response && response.variables) {
             const botResponseVar = response.variables.find(v => v.key === 'input');
@@ -149,14 +145,14 @@ export default function Chat({ thread, isVisible, onClick }) {
             setMessages(prevMessages => [...prevMessages, botMessage]);
         }
 
-    } catch (error) {
-        console.error('Failed to send message:', error);
-        // Optionally show an error to the user
-    } finally {
-        setIsSending(false);
-        setIsTyping(false);
-    }
-};
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            // Optionally show an error to the user
+        } finally {
+            setIsSending(false);
+            setIsTyping(false);
+        }
+    };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -165,71 +161,46 @@ export default function Chat({ thread, isVisible, onClick }) {
         }
     };
 
-    const handleInput = (e) => {
-        setMessage(e.currentTarget.textContent || '');
-    };
-
-    // Memoize the question click handler
-    const handleQuestionClick = useCallback((questionText) => {
-        // Set the message in state
-        setMessage(questionText);
-        
+        // Memoize the question click handler
+    const handleQuestionClick = useCallback((questionText) => {      
         // Update the contentEditable div
         if (inputRef.current) {
             inputRef.current.textContent = questionText;
         }
 
         // Automatically send the message
-        handleMessageSubmit();
-    }, []);  
+        handleMessageSubmit(questionText);
+    }, [handleMessageSubmit]); 
+
+    const handleInput = (e) => {
+        setMessage(e.currentTarget.textContent || '');
+    };
+
 
     // If no thread is selected or thread was deleted, show empty state
     if (!thread || !currentThread) {
         return (
-        <div className="flex flex-col h-full">
-        {/* Our suggested questions at the top */}
-        <div className="flex-none h-20">
-        <SuggestedQuestions onQuestionClick={handleQuestionClick} />
-        </div>
+        <div className="flex flex-col w-full h-screen mx-auto">
         
-            <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} lg:translate-x-0 fixed inset-0 h-full lg:relative lg:inset-auto flex flex-col grow w-full border-x border-gray-100 bg-white z-10 transition`}>
-                <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-500">Select a thread or create a new one to start chatting</p>
-                </div>
+            <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
+                <SuggestedQuestions onQuestionClick={handleQuestionClick} />
+            </div>
+        
+            <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 text-center">Select a thread or create a new one to start chatting</p>
             </div>
         </div>
         );
     }
 
     return (
-        
-        <div className={`${isVisible ? "translate-x-0" : "translate-x-full"} 
-        lg:translate-x-0 relative z-10 w-full lg:static lg:w-auto transition border-x border-gray-100 bg-white flex flex-col`} style={{ height: '100%' }}>
-            {/* Header */}
-            <div className="flex-none flex items-center h-24 p-6 border-b border-gray-100">
-                <button
-                    onClick={onClick}
-                    className="flex items-center justify-center mr-6 lg:hidden"
-                    type="button"
-                    aria-label="Back"
-                >
-                    <ArrowLeftIcon className="w-6 h-6" />
-                </button>
-                {/* <Avatar
-                    textImage={currentThread.shortName}
-                    isOnline={currentThread.isOnline}
-                    srcImage={currentThread.avatar}
-                />
-                <div className="flex flex-col ml-4">
-                    <span className="font-bold text-xl">{currentThread.name}</span>
-                    <span className="text-xs text-gray-400">New conversation</span>
-                </div> */}
-                <SuggestedQuestions onQuestionClick={handleQuestionClick} />
-            </div>
+    <div className="flex flex-col w-full h-screen mx-auto">
+        <div className="sticky top-0 z-20 flex items-center border-b border-gray-100 bg-white">
+            <SuggestedQuestions onQuestionClick={handleQuestionClick} />
+        </div>
 
-            <div className="flex flex-col h-[calc(100%-6rem)] overflow-hidden">
-            {/* Chat Body with status */}
-            <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 min-h-0">
+            {/* Chat Body with status */}         
                 <ChatBody 
                     thread={currentThread}
                     messages={messages}
@@ -237,17 +208,15 @@ export default function Chat({ thread, isVisible, onClick }) {
                     botStatus={botStatus}
                     isLoading={isLoading}
                     error={error}
-                />
-            </div>
+                />           
 
             {/* Message Input */}
-            <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100">
+            <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100 bg-white">
                 <button
                     className="shrink-0 text-gray-400"
                     type="button"
                     aria-label="Add media to message"
                 >
-                    <PlusCircleIcon className="w-6 h-6" />
                 </button>
                 <div className="relative flex w-full max-h-24 overflow-hidden">
                     <div
@@ -268,13 +237,13 @@ export default function Chat({ thread, isVisible, onClick }) {
                     } rounded-full overflow-hidden`}
                     type="button"
                     aria-label="Submit"
-                    onClick={handleMessageSubmit}
+                    onClick={() => handleMessageSubmit()}
                     disabled={isSending}
                 >
                     <ArrowRightIcon className="w-6 h-6 text-white" />
                 </button>
             </div>
-            </div>
         </div>
+    </div>
     );
 }

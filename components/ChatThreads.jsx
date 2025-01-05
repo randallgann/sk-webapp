@@ -12,7 +12,7 @@ import { BookmarkIcon as BookmarkOutlineIcon } from "@heroicons/react/24/outline
 import ThreadHeader from "./ThreadHeader";
 import { ThreadService } from '../utils/apiService';
 
-export default function ContactsList({ onClick, onDelete }) {
+export default function ChatThreadsList({ onClick, onDelete }) {
   const [query, setQuery] = useState("");
   const [regularThreads, setRegularThreads] = useState([]);
   const [bookmarkedThreads, setBookmarkedThreads] = useState([]);
@@ -224,14 +224,14 @@ const handleUnbookmark = async (thread) => {
   );
 
   return (
-    <div className="h-full w-full flex flex-col bg-white shadow-lg lg:shadow-none">
+    <div className="h-full w-full flex flex-col bg-white shadow-lg lg:shadow-none h-screen">
       <ThreadHeader onSearch={handleSearch} />
       <div className="flex-1 overflow-y-auto">
         <div className="p-6">
-          <p className="flex items-center text-gray-400">
+          {/* <p className="flex items-center text-gray-400">
             <BookmarkSolidIcon className="w-5 h-5" />
             <span className="uppercase text-sm font-medium ml-3">Bookmarked</span>
-          </p>
+          </p> */}
           <div>
             {filteredBookmarkedThreads.map((userData) => (
               <ThreadWithActions
@@ -261,9 +261,9 @@ const handleUnbookmark = async (thread) => {
             ))}
           </div>
         </div>
-      </div>
-      <div className="p-4 border-t border-gray-100 mt-auto">
-        <CreateThreadButton />
+        <div className="p-4">
+          <CreateThreadButton />
+        </div>
       </div>
     </div>
   );

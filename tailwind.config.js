@@ -8,10 +8,12 @@ module.exports = {
     extend: {
       colors: {
         nav: '#166E48',
-        chat: '#FAFAFA',
+        chat: '#D3D3D3', // Change this to your desired color
         message: '#F0F0F0',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 };

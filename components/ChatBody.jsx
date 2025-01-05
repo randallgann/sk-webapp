@@ -11,10 +11,13 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
     scrollTo.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  // Determine padding based on typing status
+  const bottomPadding = isTyping || messages.length === 0 ? 'pb-36' : 'pb-6';
+
   // Show empty state when no messages and not typing
   if (!messages?.length && !isTyping) {
     return (
-      <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
+      <div className="flex-1 flex-col grow p-6 bg-chat overflow-y-auto">
         <div className="flex flex-col items-center justify-center h-full space-y-4">
           <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
             <ChatBubbleBottomCenterIcon className="w-8 h-8 text-gray-400" />
@@ -39,8 +42,8 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
   );
 
   return (
-    
-    <div className="flex flex-col grow p-6 bg-chat scrollbar-hide overflow-y-auto">
+    <div className="flex-1 overflow-y-auto overflow-x-hidden bg-chat">
+    <div className={`flex flex-col p-6 w-full max-w-full ${bottomPadding}`}>
       {sortedMessages.map((message) => (
         <div key={message.id} className="py-3">
           <Message currentUser={message.isCurrentUser}>
@@ -69,6 +72,7 @@ export default function ChatBody({ thread, messages, isTyping, botStatus }) {
       )}
       
       <div ref={scrollTo}></div>
+    </div>
     </div>
   );
 }
