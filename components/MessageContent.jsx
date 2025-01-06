@@ -11,14 +11,22 @@ export default function MessageContent({
     : isTyping
       ? 'bg-message text-gray-600 animate-pulse'
       : 'bg-message',
-    padding: padding ? 'p-4' : 'p-0',
   };
 
   return (
     <div
-      className={`max-w-[85%] md:max-w-md ${styles.padding} rounded-2xl overflow-hidden whitespace-pre-wrap break-words ${
-        index === 0 && styles.tail
-      } ${styles.background}`}
+      className={`
+        max-w-[85%] 
+        md:max-w-md 
+        p-2 sm:p-3 ms:p-4 
+        rounded-2xl 
+        overflow-hidden 
+        whitespace-pre-wrap 
+        break-words
+        text-sm leading-5
+        md: text-base md:leading-6
+        ${index === 0 && styles.tail} 
+        ${styles.background}`}
     >
       {children}
     </div>

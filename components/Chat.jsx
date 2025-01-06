@@ -182,7 +182,7 @@ export default function Chat({ thread, isVisible, onClick }) {
         return (
         <div className="flex flex-col w-full h-screen mx-auto">
         
-            <div className="sticky top-0 z-20 flex flex items-center border-b border-gray-100 bg-white">
+            <div className="sticky top-0 z-20 flex items-center border-b border-gray-100 bg-white">
                 <SuggestedQuestions onQuestionClick={handleQuestionClick} />
             </div>
         
@@ -194,12 +194,13 @@ export default function Chat({ thread, isVisible, onClick }) {
     }
 
     return (
-    <div className="flex flex-col w-full h-screen mx-auto">
+    <div className="flex flex-col w-full h-screen max-h-screen overflow-hidden">
         <div className="sticky top-0 z-20 flex items-center border-b border-gray-100 bg-white">
             <SuggestedQuestions onQuestionClick={handleQuestionClick} />
         </div>
 
-        <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex-1 overflow-hidden flex flex-col">
+            <div className="flex-1 overflow-y-auto">
             {/* Chat Body with status */}         
                 <ChatBody 
                     thread={currentThread}
@@ -208,10 +209,11 @@ export default function Chat({ thread, isVisible, onClick }) {
                     botStatus={botStatus}
                     isLoading={isLoading}
                     error={error}
-                />           
+                />
+            </div>           
 
             {/* Message Input */}
-            <div className="flex-none flex items-center gap-3 p-4 border-t border-gray-100 bg-white">
+            <div className="sticky bottom-0 flex items-center gap-3 p-4 border-t border-gray-100 bg-white">
                 <button
                     className="shrink-0 text-gray-400"
                     type="button"
