@@ -28,7 +28,7 @@ export class SignalRService {
                 })
                 .withAutomaticReconnect({
                     nextRetryDelayInMilliseconds: retryContext => {
-                        if (retryContext.elapsedMilliseconds < 60000) {
+                        if (retryContext.elapsedMilliseconds < 180000) {
                             return 2000;
                         }
                         return null;
@@ -40,6 +40,16 @@ export class SignalRService {
             this.connection.onclose((error) => {
                 console.log('Connection closed:', error);
                 this.connected = false;
+            });
+
+            this.connection.onreconnecting((error) => {
+                console.log('Connection reconnecting:', error);
+                this.connected = false;
+            });
+
+            this.connection.onreconnected((connectionId) => {
+                console.log('Connection reconnected. Connection ID:', connectionId);
+                this.connected = true;
             });
 
             await this.connection.start();
@@ -54,7 +64,7 @@ export class SignalRService {
     }
 
     isConnected() {
-        return this.connected;
+        return this.connected && this.connection?.state === signalR.HubConnectionState.Connected;;
     }
 
     getConnection() {
